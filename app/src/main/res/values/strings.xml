@@ -1,3 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Wanderful</string>
+    <string name="time_Label">Select Your Trip Length</string>
+    <string name="vehicleLabel">Select Your Wander Method</string>
+    <string-array name="time_array">
+        <item>15 Minutes</item>
+        <item>30 Minutes</item>
+        <item>45 Minutes</item>
+        <item>1 Hour</item>
+        <item>1 Hour 15 Minutes</item>
+        <item>1 Hour 30 Minutes</item>
+        <item>1 Hour 45 Minutes</item>
+        <item>2 Hours</item>
+    </string-array>
+    <string-array name="vehicle_array">
+        <item>Walk</item>
+        <item>Bike</item>
+        <item>Drive</item>
+    </string-array>
 </resources>
+<!--<resources>-->
+    <!--<string name="app_name">Wanderful</string>-->
+<!--</resources>-->
