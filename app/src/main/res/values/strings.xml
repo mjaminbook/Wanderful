@@ -18,7 +18,5 @@
         <item>Bike</item>
         <item>Drive</item>
     </string-array>
-</resources>
-<!--<resources>-->
-    <!--<string name="app_name">Wanderful</string>-->
-<!--</resources>-->
+    <string name="title_activity_maps">Map</string>
+</resources><!--<resources>--><!--<string name="app_name">Wanderful</string>--><!--</resources>-->

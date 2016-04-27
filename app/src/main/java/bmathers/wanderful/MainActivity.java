@@ -1,9 +1,15 @@
 package bmathers.wanderful;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -22,7 +28,10 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity{
 
+    private static final int MY_PERMISSIONS_REQUEST_ACCESS_LOCATION = 0;
     final String APIKey = "AIzaSyAIVptHzsnZfwojldq400b74Rfm1GIFwmw";
+
+    //public final static String TRIP_LENGTH = "bmathers.wanderful";
 
 
 
@@ -30,22 +39,22 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onResume() {
         super.onResume();
-        //launch event on the pebble
-//        Context context = getApplicationContext();
-//
-//        boolean isConnected = PebbleKit.isWatchConnected(context);
-//
-//        if (isConnected) {
-//            // Launch the sports app
-//            //TODO: Eventually change to launch Wanderful
-//            PebbleKit.startAppOnPebble(context, Constants.SPORTS_UUID);
-//
-//            Toast.makeText(context, "Launching...", Toast.LENGTH_SHORT).show();
-//        } else {
-//            Toast.makeText(context, "Watch is not connected!", Toast.LENGTH_LONG).show();
-//        }
+       // launch event on the pebble
+        Context context = getApplicationContext();
 
-        boolean isConnected = PebbleKit.isWatchConnected(this);
+        boolean isConnected = PebbleKit.isWatchConnected(context);
+
+        if (isConnected) {
+            // Launch the sports app
+            //TODO: Eventually change to launch Wanderful
+            PebbleKit.startAppOnPebble(context, Constants.SPORTS_UUID);
+
+            Toast.makeText(context, "Launching...", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context, "Watch is not connected!", Toast.LENGTH_LONG).show();
+        }
+
+       // boolean isConnected = PebbleKit.isWatchConnected(this);
         Toast.makeText(this, "Pebble " + (isConnected ? "is" : "is not") + " connected!", Toast.LENGTH_LONG).show();
     }
 
@@ -85,22 +94,57 @@ public class MainActivity extends AppCompatActivity{
         vehicleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         vehicleSpinner.setAdapter(vehicleAdapter);
 
-    };
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Log.d("MainActivity", "Main Activity Created");
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                // Show an expanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_ACCESS_LOCATION);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        }
         this.addSpinners();
 
         Button launchButton = (Button)findViewById(R.id.launch_button);
         launchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                Intent intent = new Intent(MainActivity.this, MapsActivity.class);
                 double tripLength = getTime();
                 String vehicle = getMethodGerund();
                 System.out.println(tripLength + " " + vehicle);
+
+                // should intent have shit from pebble?
+
+                intent.putExtra("tripLength", tripLength);
+                intent.putExtra("vehicle", vehicle);
+                startActivity(intent);
             }
         });
     }
