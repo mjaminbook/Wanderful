@@ -37,7 +37,7 @@ import java.text.DateFormat;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener{
 
-    private static final int LOCATION_INTERVAL = 1000;
+    private static final int LOCATION_INTERVAL = 2000;
     //For saving instance state in case of instance destruction
     private static final String REQUESTING_LOCATION_UPDATES_KEY = "requesting_updates";
     private static final String LOCATION_KEY = "location";
@@ -48,6 +48,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private double tripDuration;
 
     private GoogleMap mMap;
+    private Marker mCurrentMarker;
     private GoogleApiClient mGoogleApiClient;
     private Location mCurrentLocation;
     private Marker mMarker;
@@ -132,8 +133,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(2000);
-        mLocationRequest.setFastestInterval(2000);
+        mLocationRequest.setInterval(LOCATION_INTERVAL);
+        mLocationRequest.setFastestInterval(LOCATION_INTERVAL);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
@@ -254,7 +255,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Toast.makeText(this, "location :" + mCurrentLocation.getLatitude() + " , " + mCurrentLocation.getLongitude(), Toast.LENGTH_SHORT).show();
 
         LatLng loc = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-        mMap.addMarker(new MarkerOptions().position(loc).title("You are here."));
+        
+        if (mCurrentMarker != null){
+            mCurrentMarker.remove();
+        }
+
+        mCurrentMarker = mMap.addMarker(new MarkerOptions().position(loc).title("You are here."));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
     }
 }
