@@ -41,6 +41,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //For saving instance state in case of instance destruction
     private static final String REQUESTING_LOCATION_UPDATES_KEY = "requesting_updates";
     private static final String LOCATION_KEY = "location";
+    private static final String TRIP_DURATION_KEY = "trip_duration";
+    private static final String TRANSPORTATION_KEY = "transportation_mode";
+
+    private String modeOfTransportation;
+    private double tripDuration;
 
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
@@ -59,8 +64,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Log.d("MapsActivity", "Activity Created");
         Intent intent = getIntent();
-        String transportation = intent.getStringExtra("vehicle");
-        Log.d("MapsActivity", "TRANSPORTATION IS " + transportation);
+        modeOfTransportation = intent.getStringExtra("vehicle");
+        Log.d("MapsActivity", "Transportation Mode is " + modeOfTransportation);
+        //TODO: The second parameter in the getDoubleExtra is a default value. idk what that should be
+        tripDuration = intent.getDoubleExtra("tripDuration", 15.0);
+        Log.d("MapsActivity", "Trip Duration is " + tripDuration);
+
+        updateValuesFromBundle(savedInstanceState);
 
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
@@ -82,14 +92,43 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient, builder.build());
     }
 
-    private void getLocation(){
-        LocationRequest locationRequest;
-        locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(LOCATION_INTERVAL);
-        locationRequest.setFastestInterval(LOCATION_INTERVAL);
-        fusedLocationProviderApi = LocationServices.FusedLocationApi;
+    private void updateValuesFromBundle(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            // Update the value of mRequestingLocationUpdates from the Bundle, and
+            // make sure that the Start Updates and Stop Updates buttons are
+            // correctly enabled or disabled.
+            if (savedInstanceState.keySet().contains(REQUESTING_LOCATION_UPDATES_KEY)) {
+                mRequestingLocationUpdates = savedInstanceState.getBoolean(REQUESTING_LOCATION_UPDATES_KEY);
+            }
+
+            // Update the value of mCurrentLocation from the Bundle and update the
+            // UI to show the correct latitude and longitude.
+            if (savedInstanceState.keySet().contains(LOCATION_KEY)) {
+                // Since LOCATION_KEY was found in the Bundle, we can be sure that
+                // mCurrentLocation is not null.
+                mCurrentLocation = savedInstanceState.getParcelable(LOCATION_KEY);
+            }
+
+            if (savedInstanceState.keySet().contains(TRIP_DURATION_KEY)){
+                tripDuration = savedInstanceState.getDouble(TRIP_DURATION_KEY);
+            }
+
+            if (savedInstanceState.keySet().contains(TRANSPORTATION_KEY)){
+                modeOfTransportation = savedInstanceState.getString(TRANSPORTATION_KEY);
+            }
+
+            updateUI();
+        }
     }
+
+//    private void getLocation(){
+//        LocationRequest locationRequest;
+//        locationRequest = LocationRequest.create();
+//        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+//        locationRequest.setInterval(LOCATION_INTERVAL);
+//        locationRequest.setFastestInterval(LOCATION_INTERVAL);
+//        fusedLocationProviderApi = LocationServices.FusedLocationApi;
+//    }
 
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
@@ -116,6 +155,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onSaveInstanceState(Bundle savedInstanceState){
         savedInstanceState.putBoolean(REQUESTING_LOCATION_UPDATES_KEY, mRequestingLocationUpdates);
         savedInstanceState.putParcelable(LOCATION_KEY, mCurrentLocation);
+        savedInstanceState.putDouble(TRIP_DURATION_KEY, tripDuration);
+        savedInstanceState.putString(TRANSPORTATION_KEY, modeOfTransportation);
         super.onSaveInstanceState(savedInstanceState);
     }
     /**

@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity{
 
                 // should intent have shit from pebble?
 
-                intent.putExtra("tripLength", tripLength);
+                intent.putExtra("tripDuration", tripLength);
                 intent.putExtra("vehicle", vehicle);
                 startActivity(intent);
             }
